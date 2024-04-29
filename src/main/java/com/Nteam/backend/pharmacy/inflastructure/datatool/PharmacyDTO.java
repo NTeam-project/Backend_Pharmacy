@@ -11,6 +11,8 @@ public class PharmacyDTO {
     private String name;
     private String address;
     private String phone;
+//    private double longitude;
+//    private double latitude;
     private boolean english;
     private boolean chinese;
     private boolean japanese;

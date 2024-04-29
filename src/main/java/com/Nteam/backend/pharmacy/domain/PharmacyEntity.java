@@ -16,6 +16,8 @@ public class PharmacyEntity {
     private String district;
     private String name;
     private String address;
+    private double latitude;
+    private double longitude;
     private String phone;
     private boolean english;
     private boolean chinese;

@@ -1,6 +1,12 @@
 package com.Nteam.backend.pharmacy.interfaces;
 import com.Nteam.backend.pharmacy.application.PharmacyService;
 import com.Nteam.backend.pharmacy.inflastructure.datatool.PharmacyDTO;
+import com.Nteam.backend.pharmacy.inflastructure.datatool.ResponseDTO;
+import com.Nteam.backend.pharmacy.inflastructure.datatool.address.Document;
+import com.Nteam.backend.pharmacy.inflastructure.datatool.address.RootDto;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -11,11 +17,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/pharmacies")
 public class PharmacyController {
+
+    @Value("${pharmacy.api.key}")
+    private String API_KEY;
+
 
     private final PharmacyService pharmacyService;
 
@@ -34,9 +45,14 @@ public class PharmacyController {
         return pharmacyService.getPharmacy(id);
 
     }
+//    @PostMapping()
+//    public void getmap(String address){
+//        pharmacyService.generateCoordinate(API_KEY, URL, address);
+//    }
 
-    @RequestMapping(value = "/map", method = RequestMethod.GET, produces="application/json;charset=UTF-8")
-    public String getKakaoApiFromAddress(@RequestParam("address") String roadFullAddr) {
+
+    @RequestMapping(value = "/map/{address}", method = RequestMethod.GET, produces="application/json;charset=UTF-8")
+    public String getKakaoApiFromAddress(@PathVariable("address") String roadFullAddr) {
         String apiKey = "6697ce651492e186db0ea6d0c9dc850a";
         String apiUrl = "https://dapi.kakao.com/v2/local/search/address.json";
         String jsonString = null;
@@ -78,6 +94,24 @@ public class PharmacyController {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        try {
+            RootDto rootDto = objectMapper.readValue(jsonString, RootDto.class);
+            List<ResponseDTO> responseList = new ArrayList<>();
+            System.out.println("Documents size: " + rootDto.getDocuments().size());
+
+//            for (Document document : rootDto.getDocuments()) {
+//                responseList.add(new ResponseDTO(document.getY(), document.getX()));
+//            }
+            for (ResponseDTO response : responseList) {
+                System.out.println("Latitude: " + response.getLatitude() + ", Longitude: " + response.getLongitude());
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return jsonString;

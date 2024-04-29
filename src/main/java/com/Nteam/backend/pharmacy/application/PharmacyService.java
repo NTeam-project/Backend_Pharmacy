@@ -55,4 +55,26 @@ public class PharmacyService {
                 .build();
     }
 
+//
+//    public void generateCoordinate(String apiKey, String url, String address) {
+//        ResponseEntity<CoordinateDTO> responseEntity = requestCoordiate(apiKey, url, address);
+//
+//    }
+//
+//    private ResponseEntity<CoordinateDTO> requestCoordiate(String apiKey, String url, String address) throws UnsupportedEncodingException {
+//        address = URLEncoder.encode(address, "UTF-8");
+//        URI uri = UriComponentsBuilder
+//                .fromUriString(url)
+//                .path(address)
+//                .queryParam("url", address)
+//                .encode()
+//                .build()
+//                .toUri();
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setAccept(Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON}));
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        headers.set("");
+//
+//    }
 }
