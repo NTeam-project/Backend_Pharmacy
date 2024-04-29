@@ -2,8 +2,8 @@ package com.Nteam.backend.pharmacy.application;
 
 import com.Nteam.backend.pharmacy.domain.PharmacyEntity;
 import com.Nteam.backend.pharmacy.inflastructure.PharmacyRepository;
-import com.Nteam.backend.pharmacy.inflastructure.datatool.PharmacyDTO;
 
+import com.Nteam.backend.pharmacy.inflastructure.datatool.PharmacyDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,29 +15,15 @@ import java.util.stream.Collectors;
 public class PharmacyService {
     private final PharmacyRepository pharmacyRepository;
 
-    public PharmacyService(PharmacyRepository pharmacyRepository){
+    public PharmacyService(PharmacyRepository pharmacyRepository){ //의존성주입
         this.pharmacyRepository = pharmacyRepository;
     }
 
-    public List<PharmacyDTO> getPharmacyList() {
+    public List<PharmacyDTO> getPharmacyList() { //전체조회
         return pharmacyRepository.findAll().stream().map(this::transform).collect(Collectors.toList());
     }
 
-    private PharmacyDTO transform(PharmacyEntity pharmacyEntity) {
-        return PharmacyDTO.builder()
-                .id(pharmacyEntity.getId())
-                .district(pharmacyEntity.getDistrict())
-                .name(pharmacyEntity.getName())
-                .address(pharmacyEntity.getAddress())
-                .phone(pharmacyEntity.getPhone())
-                .english(pharmacyEntity.isEnglish())
-                .chinese(pharmacyEntity.isChinese())
-                .japanese(pharmacyEntity.isJapanese())
-                .otherLanguages(pharmacyEntity.getOtherLanguages())
-                .build();
-    }
-
-    public PharmacyDTO getPharmacy(Long id) {
+    public PharmacyDTO getPharmacy(Long id) { //하나 조회
         Optional<PharmacyEntity> optionalPharmacy = pharmacyRepository.findById(id);
         System.out.print(id);
         if(optionalPharmacy.isPresent()){
@@ -51,17 +37,22 @@ public class PharmacyService {
                     .english(pharmacyEntity.isEnglish())
                     .chinese(pharmacyEntity.isChinese())
                     .japanese(pharmacyEntity.isJapanese())
-                    .otherLanguages(pharmacyEntity.getOtherLanguages())
                     .build();
         }
         return null;
-
     }
 
-
-//    public List<PharmacyDTO> getPharmacyList() {
-//        return pharmacyRepository.findAll().stream().collect(Collectors.toList());
-//    }
-
+    private PharmacyDTO transform(PharmacyEntity pharmacyEntity) { //변경폼
+        return PharmacyDTO.builder()
+                .id(pharmacyEntity.getId())
+                .district(pharmacyEntity.getDistrict())
+                .name(pharmacyEntity.getName())
+                .address(pharmacyEntity.getAddress())
+                .phone(pharmacyEntity.getPhone())
+                .english(pharmacyEntity.isEnglish())
+                .chinese(pharmacyEntity.isChinese())
+                .japanese(pharmacyEntity.isJapanese())
+                .build();
+    }
 
 }
