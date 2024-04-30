@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PharmacyEntity {
     @Id
-    private Long id;
-    private String district;
-    private String name;
+    private Long phar_id;
+    private String phar_gu;
+    private String phar_name;
     private String address;
     private double latitude;
     private double longitude;
