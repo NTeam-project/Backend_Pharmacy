@@ -26,8 +26,15 @@ public class PharmacyController {
         return pharmacyService.getPharmacy(id);
 
     }
+
+//    @GetMapping("/gu/{gu}") // 구조회
+//    public List<PharmacyDTO> getHospitalsByGu(@PathVariable(value = "gu") String gu) {
+//        return pharmacyService.getHospitalsByGu(gu);
+//    }
+
     @GetMapping("/nearest") //근처 약국 조회 요청값 위도, 경도, 언어 가능유무
     public List<PharmacyEntity> getNearestPharmacies(
+
             @RequestParam("lat") double lat,
             @RequestParam("lon") double lon,
             @RequestParam(name = "english", required = false, defaultValue = "true") boolean english,

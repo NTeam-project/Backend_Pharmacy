@@ -44,9 +44,9 @@ public class CommandLineRunner implements org.springframework.boot.CommandLineRu
 
             for (JsonNode node : root) { //돌면서 저장
                 PharmacyEntity pharmacy = new PharmacyEntity();
-                pharmacy.setId(node.get("연번").asLong());
-                pharmacy.setDistrict(node.get("자치구").asText());
-                pharmacy.setName(node.get("약국이름").asText());
+                pharmacy.setPhar_id(node.get("연번").asLong());
+                pharmacy.setPhar_gu(node.get("자치구").asText());
+                pharmacy.setPhar_name(node.get("약국이름").asText());
                 pharmacy.setAddress(node.get("주소 (도로명)").asText());
                 address = node.get("주소 (도로명)").asText();
                 arr.add(address);

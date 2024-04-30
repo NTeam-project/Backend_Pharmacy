@@ -30,9 +30,9 @@ public class PharmacyService {
         if(optionalPharmacy.isPresent()){
             PharmacyEntity pharmacyEntity = optionalPharmacy.get();
             return PharmacyDTO.builder()
-                    .id(pharmacyEntity.getId())
-                    .district(pharmacyEntity.getDistrict())
-                    .name(pharmacyEntity.getName())
+                    .id(pharmacyEntity.getPhar_id())
+                    .district(pharmacyEntity.getPhar_gu())
+                    .name(pharmacyEntity.getPhar_name())
                     .address(pharmacyEntity.getAddress())
                     .phone(pharmacyEntity.getPhone())
                     .english(pharmacyEntity.isEnglish())
@@ -64,9 +64,9 @@ public class PharmacyService {
 
     private PharmacyDTO transform(PharmacyEntity pharmacyEntity) { //변경폼
         return PharmacyDTO.builder()
-                .id(pharmacyEntity.getId())
-                .district(pharmacyEntity.getDistrict())
-                .name(pharmacyEntity.getName())
+                .id(pharmacyEntity.getPhar_id())
+                .district(pharmacyEntity.getPhar_gu())
+                .name(pharmacyEntity.getPhar_name())
                 .address(pharmacyEntity.getAddress())
                 .phone(pharmacyEntity.getPhone())
                 .english(pharmacyEntity.isEnglish())
@@ -74,5 +74,4 @@ public class PharmacyService {
                 .japanese(pharmacyEntity.isJapanese())
                 .build();
     }
-
 }
