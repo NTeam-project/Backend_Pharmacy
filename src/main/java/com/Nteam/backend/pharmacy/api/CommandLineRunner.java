@@ -1,18 +1,16 @@
 package com.Nteam.backend.pharmacy.api;
-
 import com.Nteam.backend.pharmacy.domain.PharmacyEntity;
 import com.Nteam.backend.pharmacy.inflastructure.PharmacyRepository;
 import com.Nteam.backend.pharmacy.inflastructure.datatool.ResponseDTO;
 import com.Nteam.backend.pharmacy.inflastructure.datatool.address.RootDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -23,9 +21,9 @@ import java.util.List;
 
 @Component
 public class CommandLineRunner implements org.springframework.boot.CommandLineRunner {
-    private final String apiKey = "6697ce651492e186db0ea6d0c9dc850a";
-    private final String apiUrl = "https://dapi.kakao.com/v2/local/search/address.json";
 
+    @Value("${pharmacy.api.key}")
+    private String API_KEY;
 
     private PharmacyRepository pharmacyRepository;
 
@@ -33,7 +31,7 @@ public class CommandLineRunner implements org.springframework.boot.CommandLineRu
         this.pharmacyRepository = pharmacyRepository;
     }
     @Override
-    public void run(String... args) throws UnsupportedEncodingException {
+    public void run(String... args) {
         ObjectMapper mapper = new ObjectMapper();
         String address;
         double longtitude;
@@ -44,9 +42,7 @@ public class CommandLineRunner implements org.springframework.boot.CommandLineRu
             ClassPathResource resource = new ClassPathResource("pharmacyList.json");
             JsonNode root = mapper.readTree(resource.getInputStream()); // JSON 데이터를 JsonNode로 읽음
 
-
-
-            for (JsonNode node : root) { //돌면서 저정
+            for (JsonNode node : root) { //돌면서 저장
                 PharmacyEntity pharmacy = new PharmacyEntity();
                 pharmacy.setId(node.get("연번").asLong());
                 pharmacy.setDistrict(node.get("자치구").asText());
@@ -55,7 +51,7 @@ public class CommandLineRunner implements org.springframework.boot.CommandLineRu
                 address = node.get("주소 (도로명)").asText();
                 arr.add(address);
                 longtitude = generateCoordinate(address).getLongitude();
-                latitude = generateCoordinate(address).getLongitude();
+                latitude = generateCoordinate(address).getLatitude();
                 pharmacy.setLongitude(longtitude);
                 pharmacy.setLatitude(latitude);
                 pharmacy.setPhone(node.get("전화번호").asText());
@@ -69,7 +65,7 @@ public class CommandLineRunner implements org.springframework.boot.CommandLineRu
         }
     }
     public ResponseDTO generateCoordinate(String address) throws UnsupportedEncodingException {
-        ResponseEntity<RootDto> responseEntity = requestCoordinate(apiKey, address); //요청 api, 주소
+        ResponseEntity<RootDto> responseEntity = requestCoordinate(API_KEY, address); //요청 api, 주소
 
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
             System.out.print(responseEntity.getBody());
@@ -78,7 +74,7 @@ public class CommandLineRunner implements org.springframework.boot.CommandLineRu
                 ResponseDTO responseDTO = new ResponseDTO(37.5, 37.5);
                 return responseDTO;
             }
-            ResponseDTO responseDTO = new ResponseDTO(rootDto.getDocuments().get(0).getX(), rootDto.getDocuments().get(0).getY());
+            ResponseDTO responseDTO = new ResponseDTO(rootDto.getDocuments().get(0).getX(), rootDto.getDocuments().get(0).getY()); //추가
             return responseDTO;
             }
 
@@ -88,14 +84,15 @@ public class CommandLineRunner implements org.springframework.boot.CommandLineRu
     private ResponseEntity<RootDto> requestCoordinate(String apiKey, String address) throws UnsupportedEncodingException {
         String encodedAddress = URLEncoder.encode(address, "UTF-8");
 
-        URI uri = UriComponentsBuilder
+        String apiUrl = "https://dapi.kakao.com/v2/local/search/address.json";
+        URI uri = UriComponentsBuilder //url생성
                 .fromUriString(apiUrl)
                 .queryParam("query", address)
                 .build()
                 .encode()
                 .toUri();
 
-        HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = new HttpHeaders(); //헤더 생성
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "KakaoAK " + apiKey);
@@ -104,7 +101,7 @@ public class CommandLineRunner implements org.springframework.boot.CommandLineRu
 
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<RootDto> response = restTemplate.exchange(uri, HttpMethod.GET, entity, RootDto.class);
+        ResponseEntity<RootDto> response = restTemplate.exchange(uri, HttpMethod.GET, entity, RootDto.class); //url + 헤더 + get요청 후 Dto변환
         return response;
     }
 }

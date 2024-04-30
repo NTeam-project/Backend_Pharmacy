@@ -6,6 +6,7 @@ import com.Nteam.backend.pharmacy.inflastructure.PharmacyRepository;
 import com.Nteam.backend.pharmacy.inflastructure.datatool.PharmacyDTO;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,6 +42,25 @@ public class PharmacyService {
         }
         return null;
     }
+    public List<PharmacyEntity> findNearestPharmacies(double lat, double lon, boolean english, boolean chinese, boolean japanese) {
+        List<PharmacyEntity> pharmacies = pharmacyRepository.findAll();
+        return pharmacies.stream()
+                .filter(p -> p.isEnglish() == english && p.isChinese() == chinese && p.isJapanese() == japanese)
+                .sorted(Comparator.comparingDouble(p -> distance(lat, lon, p.getLatitude(), p.getLongitude())))
+                .limit(10) //약국조회개수
+                .collect(Collectors.toList());
+    }
+
+    private double distance(double lat1, double lon1, double lat2, double lon2) { //계산하기
+        double earthRadius = 6371; // km
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return earthRadius * c;
+    }
 
     private PharmacyDTO transform(PharmacyEntity pharmacyEntity) { //변경폼
         return PharmacyDTO.builder()
@@ -55,26 +75,4 @@ public class PharmacyService {
                 .build();
     }
 
-//
-//    public void generateCoordinate(String apiKey, String url, String address) {
-//        ResponseEntity<CoordinateDTO> responseEntity = requestCoordiate(apiKey, url, address);
-//
-//    }
-//
-//    private ResponseEntity<CoordinateDTO> requestCoordiate(String apiKey, String url, String address) throws UnsupportedEncodingException {
-//        address = URLEncoder.encode(address, "UTF-8");
-//        URI uri = UriComponentsBuilder
-//                .fromUriString(url)
-//                .path(address)
-//                .queryParam("url", address)
-//                .encode()
-//                .build()
-//                .toUri();
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setAccept(Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON}));
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.set("");
-//
-//    }
 }
